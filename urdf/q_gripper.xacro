@@ -153,11 +153,11 @@
 </link>
 
 <joint name="${prefix}_FJ" type="revolute">
-<origin xyz="0.020000000000000017764 -0.027286999999999998756 0.050499999999999989342" rpy="-1.5707963267948972241 1.2217304763960308289 3.141592653589793116" />
+<origin xyz="0.020000000000000017764 -0.027286999999999998756 0.050499999999999989342" rpy="-1.5707963267948972241 1.570796327 3.141592653589793116" />
 <parent link="${prefix}_base" />
 <child link="${prefix}_finger" />
 <axis xyz="0 0 1"/>
-<limit effort="1" velocity="20" lower="-0.34906585039886589561" upper="1.570796326794896558"/>
+<limit effort="1" velocity="20" lower="-0.6" upper="0.79"/>
 <joint_properties friction="0.0"/>
 </joint>
 
