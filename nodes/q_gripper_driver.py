@@ -59,7 +59,7 @@ def init_joints(hand_name_='q_gripper'):
     hand_name = hand_name_
     n_joints = 1
     short_joint_names  = ['FJ' ]  
-    joint_names  = [hand_name + '/' + s for s in short_joint_names]
+    joint_names  = [hand_name + '_' + s for s in short_joint_names]
     joint_index = {}
 
     for j in range( len(short_joint_names) ):
