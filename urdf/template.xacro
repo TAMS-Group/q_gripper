@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="q_gripper">
+
+
+<xacro:macro name="q_gripper" params="prefix" >
+URDF_CONTENT
+</xacro:macro>
+
+</robot>

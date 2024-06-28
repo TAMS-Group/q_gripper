@@ -1,0 +1,13 @@
+{
+    "configuration": "default",
+    "documentId": "c5f11520b76e99fd1b879264",
+    "documentMicroversion": "a48efcf422f4003b35075279",
+    "elementId": "94af912925ac1f90301c913e",
+    "fullConfiguration": "default",
+    "id": "M8NJi0tqGSIqTyEJf",
+    "isStandardContent": false,
+    "name": "loadcell_finger2 <1>",
+    "partId": "RODD",
+    "suppressed": false,
+    "type": "Part"
+}

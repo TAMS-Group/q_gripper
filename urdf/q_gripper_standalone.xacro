@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="q_gripper_standalone">
+
+
+
+  <xacro:include filename="$(find q_gripper)/urdf/q_gripper.xacro" />
+
+
+  <link name="world" />
+
+  <!-- the gripper, attached to world -->
+
+  <xacro:q_gripper prefix="q_gripper" />
+
+  <joint name="world_diana_gripper_joint" type="fixed" >
+   <parent link="world" />
+   <child  link="q_gripper_base" />
+   <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+ 
+
+</robot>

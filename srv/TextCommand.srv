@@ -1,0 +1,6 @@
+# Generic service for a user command.
+#
+string     command
+---
+string     status
+
