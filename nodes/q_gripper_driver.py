@@ -80,7 +80,7 @@ def init_joints(hand_name_='q_gripper'):
     js.effort    = np.zeros( n_joints )
 
     js_errors    = sensor_msgs.msg.JointState()  # current pos + current vel + pos error in one message
-    js_errors.name      = joint_names;
+    js_errors.name      = joint_names
     js_errors.position  = np.zeros( n_joints )
     js_errors.velocity  = np.zeros( n_joints )
     js_errors.effort    = np.zeros( n_joints )
@@ -92,6 +92,7 @@ temp_joy     = sensor_msgs.msg.Joy()         # temperatures
 volt_joy     = sensor_msgs.msg.Joy()         # voltages 
 curr_joy     = sensor_msgs.msg.Joy()         # currents 
 forces_joy   = sensor_msgs.msg.Joy()         # strain-gauge forces (raw)
+forces_calibrated_joy   = sensor_msgs.msg.Joy()         # strain-gauge forces (calibrated)
 
 previous_positions_stamp = None
 previous_torques_stamp = None
@@ -102,8 +103,14 @@ previous_positions = np.zeros( n_joints )
 #
 n_load_cells = 1
 grams_to_newtons = 0.00981
-load_cell_bias = np.zeros( n_load_cells )
-load_cell_gains = np.ones( n_load_cells )
+if rospy.has_param( '~load_cell_bias' ):
+    load_cell_bias = np.array([rospy.get_param( '~load_cell_bias' )]*n_load_cells)
+else:
+    load_cell_bias = np.zeros( n_load_cells )
+if rospy.has_param( '~load_cell_gains' ):
+    load_cell_gains = np.array([rospy.get_param( '~load_cell_gains' )]*n_load_cells)
+else:
+    load_cell_gains = np.ones( n_load_cells )
 forces_averaged = []
 for i in range( n_load_cells ):
     forces_averaged.append(collections.deque( maxlen=100 ))
@@ -377,7 +384,7 @@ def get_calibrated_forces( counts ): # raw loadcell readings
     N = len( load_cell_gains )
     forces = np.zeros( N )
     for i in range( N ):
-        forces[i] = grams_to_newtons*(load_cell_bias[i] + counts[i]*load_cell_gains[i])
+        forces[i] = grams_to_newtons*((load_cell_bias[i] + counts[i])*load_cell_gains[i])
     return forces
 
 
@@ -671,8 +678,12 @@ def q_gripper_driver():
 
                 forces_joy.header.frame_id = 'q_gripper/loadcell_forces_raw'
                 forces_joy.header.stamp    = rospy.Time.now()
-                forces_joy.axes            = get_calibrated_forces( load_cell_counts )
+                forces_joy.axes            = load_cell_counts
                 forces_raw_publisher.publish( forces_joy )
+                forces_calibrated_joy.header.frame_id = 'q_gripper/loadcell_forces'
+                forces_calibrated_joy.header.stamp    = rospy.Time.now()
+                forces_calibrated_joy.axes            = get_calibrated_forces( load_cell_counts )
+                forces_publisher.publish( forces_calibrated_joy )
 
             elif (data[0] == 'G'): # IMU: 'b'G 88 173 0 accel -5 -37 8235 gyro 13 -47 -59 \n''
                 (str_I, seq_number, stamp, imu_index, str_accel, ax, ay, az, str_gyro, gx, gy, gz ) = \
