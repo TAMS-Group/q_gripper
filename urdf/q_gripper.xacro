@@ -79,38 +79,56 @@
 <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
 </inertial>
 </link>
-<joint name="${prefix}_palm_frame" type="fixed">
+<joint name="${prefix}_palm_mirrored_frame" type="fixed">
 <origin xyz="0.019879794899435476729 -0.00076566657683469602734 0.060499999999999984346" rpy="0 -0 0" />
 <parent link="${prefix}_base" />
 <child link="${prefix}_palm" />
 <axis xyz="0 0 0"/>
 </joint>
-
-<link name="${prefix}_grasp_tip">
+<link name="${prefix}_palm_mirrored">
 <inertial>
 <origin xyz="0 0 0" rpy="0 0 0" />
 <mass value="1e-9" />
 <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
 </inertial>
 </link>
-<joint name="${prefix}_grasp_tip_frame" type="fixed">
-<origin xyz="0.019879794899435476729 -0.00076566657683469711154 0.13549999999999998157" rpy="0 -0 -1.570796326794896558" />
-<parent link="${prefix}_base" />
-<child link="${prefix}_grasp_tip" />
+<joint name="${prefix}_palm_frame" type="fixed">
+<origin xyz="0 0 0 " rpy="0 -0 3.14159265" />
+<parent link="${prefix}_palm" />
+<child link="${prefix}_palm_mirrored" />
 <axis xyz="0 0 0"/>
 </joint>
 
+<link name="${prefix}_grasp_tip"/>
+<joint name="${prefix}_grasp_tip_frame" type="fixed">
+<origin xyz="0.019879794899435476729 -0.00076566657683469711154 0.13549999999999998157" rpy="0 0 0" />
+<parent link="${prefix}_base" />
+<child link="${prefix}_grasp_tip" />
+</joint>
+
+<link name="${prefix}_grasp_tip_mirrored"/>
+<joint name="${prefix}_grasp_tip_mirrored_frame" type="fixed">
+<origin xyz="0 0 0" rpy="0 0 3.1416" />
+<parent link="${prefix}_grasp_tip" />
+<child link="${prefix}_grasp_tip_mirrored" />
+</joint>
+
+
 <link name="${prefix}_grasp_point">
-<inertial>
-<origin xyz="0 0 0" rpy="0 0 0" />
-<mass value="1e-9" />
-<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
-</inertial>
 </link>
 <joint name="${prefix}_grasp_point_frame" type="fixed">
 <origin xyz="0.019879794899435476729 -0.00076566657683469602734 0.13049999999999997713" rpy="0 -0 0" />
 <parent link="${prefix}_base" />
 <child link="${prefix}_grasp_point" />
+<axis xyz="0 0 0"/>
+</joint>
+
+<link name="${prefix}_grasp_point_approach">
+</link>
+<joint name="${prefix}_grasp_point_approach_frame" type="fixed">
+<origin xyz="0.015 0 0" rpy="0 0 0" />
+<parent link="${prefix}_grasp_point" />
+<child link="${prefix}_grasp_point_approach" />
 <axis xyz="0 0 0"/>
 </joint>
 
