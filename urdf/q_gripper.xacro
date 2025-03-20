@@ -106,6 +106,13 @@
 <child link="${prefix}_grasp_tip" />
 </joint>
 
+<link name="${prefix}_grasp_tip_camera"/>
+<joint name="${prefix}_grasp_tip_camera_frame" type="fixed">
+<origin xyz="0.019879794899435476729 -0.00076566657683469711154 0.13549999999999998157" rpy="0 0 -1.57" />
+<parent link="${prefix}_base" />
+<child link="${prefix}_grasp_tip_camera" />
+</joint>
+
 <link name="${prefix}_grasp_tip_mirrored"/>
 <joint name="${prefix}_grasp_tip_mirrored_frame" type="fixed">
 <origin xyz="0 0 0" rpy="0 0 3.1416" />
