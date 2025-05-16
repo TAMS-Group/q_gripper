@@ -1,194 +1,263 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="q_gripper">
 
 
-<xacro:macro name="q_gripper" params="prefix" >
+    <xacro:macro name="q_gripper" params="prefix">
 
-<link name="${prefix}_base">
-<visual>
-<origin xyz="-0.013950000000000000594 1.3877787807814456755e-17 0.11550000000000000544" rpy="0 -0 -1.570796326794896558" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/loadcell_finger2.stl"/>
-</geometry>
-<material name="loadcell_finger2_material">
-<color rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0"/>
-</material>
-</visual>
-<collision>
-<origin xyz="-0.013950000000000000594 1.3877787807814456755e-17 0.11550000000000000544" rpy="0 -0 -1.570796326794896558" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/loadcell_finger2.stl"/>
-</geometry>
-</collision>
-<visual>
-<origin xyz="-0.013950000000000000594 0.0063750000000000056621 0.040499999999999994338" rpy="1.570796326794896558 -0 -1.570796326794896558" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/loadcell.stl"/>
-</geometry>
-<material name="loadcell_material">
-<color rgba="0.2313725490196078538 0.38039215686274507888 0.7058823529411765163 1.0"/>
-</material>
-</visual>
-<collision>
-<origin xyz="-0.013950000000000000594 0.0063750000000000056621 0.040499999999999994338" rpy="1.570796326794896558 -0 -1.570796326794896558" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/loadcell.stl"/>
-</geometry>
-</collision>
-<visual>
-<origin xyz="0.030000000000000005829 0.019750000000000003664 0.040499999999999987399" rpy="-1.570796326794896558 -0 3.141592653589793116" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/base.stl"/>
-</geometry>
-<material name="base_material">
-<color rgba="0.64705882352941179736 0.64705882352941179736 0.64705882352941179736 1.0"/>
-</material>
-</visual>
-<collision>
-<origin xyz="0.030000000000000005829 0.019750000000000003664 0.040499999999999987399" rpy="-1.570796326794896558 -0 3.141592653589793116" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/base.stl"/>
-</geometry>
-</collision>
-<visual>
-<origin xyz="0 0 0" rpy="0 -0 1.570796326794896558" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/gripper_hull.stl"/>
-</geometry>
-<material name="gripper_hull_material">
-<color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
-</material>
-</visual>
-<collision>
-<origin xyz="0 0 0" rpy="0 -0 1.570796326794896558" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/gripper_hull.stl"/>
-</geometry>
-</collision>
-<inertial>
-<origin xyz="0 0 0" rpy="0 0 0"/>
-<mass value="0" />
-<inertia ixx="0" ixy="0"  ixz="0" iyy="0" iyz="0" izz="0" />
-</inertial>
-</link>
+        <link name="${prefix}_base">
+            <visual>
+                <origin
+                    xyz="-0.013950000000000000594 1.3877787807814456755e-17 0.11550000000000000544"
+                    rpy="0 -0 -1.570796326794896558" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/loadcell_finger2.stl" />
+                </geometry>
+                <material name="loadcell_finger2_material">
+                    <color
+                        rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0" />
+                </material>
+            </visual>
+            <collision>
+                <origin
+                    xyz="-0.013950000000000000594 1.3877787807814456755e-17 0.11550000000000000544"
+                    rpy="0 -0 -1.570796326794896558" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/loadcell_finger2.stl" />
+                </geometry>
+            </collision>
+            <visual>
+                <origin
+                    xyz="-0.013950000000000000594 0.0063750000000000056621 0.040499999999999994338"
+                    rpy="1.570796326794896558 -0 -1.570796326794896558" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/loadcell.stl" />
+                </geometry>
+                <material name="loadcell_material">
+                    <color
+                        rgba="0.2313725490196078538 0.38039215686274507888 0.7058823529411765163 1.0" />
+                </material>
+            </visual>
+            <collision>
+                <origin
+                    xyz="-0.013950000000000000594 0.0063750000000000056621 0.040499999999999994338"
+                    rpy="1.570796326794896558 -0 -1.570796326794896558" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/loadcell.stl" />
+                </geometry>
+            </collision>
+            <visual>
+                <origin
+                    xyz="0.030000000000000005829 0.019750000000000003664 0.040499999999999987399"
+                    rpy="-1.570796326794896558 -0 3.141592653589793116" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/base.stl" />
+                </geometry>
+                <material name="base_material">
+                    <color
+                        rgba="0.64705882352941179736 0.64705882352941179736 0.64705882352941179736 1.0" />
+                </material>
+            </visual>
+            <collision>
+                <origin
+                    xyz="0.030000000000000005829 0.019750000000000003664 0.040499999999999987399"
+                    rpy="-1.570796326794896558 -0 3.141592653589793116" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/base.stl" />
+                </geometry>
+            </collision>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 -0 1.570796326794896558" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/gripper_hull.stl" />
+                </geometry>
+                <material name="gripper_hull_material">
+                    <color
+                        rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 -0 1.570796326794896558" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/gripper_hull.stl" />
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="0" />
+                <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+            </inertial>
+        </link>
 
-<link name="${prefix}_palm">
-<inertial>
-<origin xyz="0 0 0" rpy="0 0 0" />
-<mass value="1e-9" />
-<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
-</inertial>
-</link>
-<joint name="${prefix}_palm_mirrored_frame" type="fixed">
-<origin xyz="0.019879794899435476729 -0.00076566657683469602734 0.060499999999999984346" rpy="0 -0 0" />
-<parent link="${prefix}_base" />
-<child link="${prefix}_palm" />
-<axis xyz="0 0 0"/>
-</joint>
-<link name="${prefix}_palm_mirrored">
-<inertial>
-<origin xyz="0 0 0" rpy="0 0 0" />
-<mass value="1e-9" />
-<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
-</inertial>
-</link>
-<joint name="${prefix}_palm_frame" type="fixed">
-<origin xyz="0 0 0 " rpy="0 -0 3.14159265" />
-<parent link="${prefix}_palm" />
-<child link="${prefix}_palm_mirrored" />
-<axis xyz="0 0 0"/>
-</joint>
+        <link name="${prefix}_palm">
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="1e-9" />
+                <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+            </inertial>
+        </link>
+        <joint name="${prefix}_palm_mirrored_frame" type="fixed">
+            <origin xyz="0.019879794899435476729 -0.00076566657683469602734 0.060499999999999984346"
+                rpy="0 -0 0" />
+            <parent link="${prefix}_base" />
+            <child link="${prefix}_palm" />
+            <axis xyz="0 0 0" />
+        </joint>
+        <link name="${prefix}_palm_mirrored">
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="1e-9" />
+                <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+            </inertial>
+        </link>
+        <joint name="${prefix}_palm_frame" type="fixed">
+            <origin xyz="0 0 0 " rpy="0 -0 3.14159265" />
+            <parent link="${prefix}_palm" />
+            <child link="${prefix}_palm_mirrored" />
+            <axis xyz="0 0 0" />
+        </joint>
 
-<link name="${prefix}_grasp_tip"/>
-<joint name="${prefix}_grasp_tip_frame" type="fixed">
-<origin xyz="0.019879794899435476729 -0.00076566657683469711154 0.13549999999999998157" rpy="0 0 0" />
-<parent link="${prefix}_base" />
-<child link="${prefix}_grasp_tip" />
-</joint>
+        <link name="${prefix}_grasp_tip" />
+        <joint name="${prefix}_grasp_tip_frame" type="fixed">
+            <origin xyz="0.019879794899435476729 -0.00076566657683469711154 0.13549999999999998157"
+                rpy="0 0 0" />
+            <parent link="${prefix}_base" />
+            <child link="${prefix}_grasp_tip" />
+        </joint>
 
-<link name="${prefix}_grasp_tip_camera"/>
-<joint name="${prefix}_grasp_tip_camera_frame" type="fixed">
-<origin xyz="0.019879794899435476729 -0.00076566657683469711154 0.13549999999999998157" rpy="0 0 -1.57" />
-<parent link="${prefix}_base" />
-<child link="${prefix}_grasp_tip_camera" />
-</joint>
+        <link name="${prefix}_grasp_tip_camera" />
+        <joint name="${prefix}_grasp_tip_camera_frame" type="fixed">
+            <origin xyz="0.019879794899435476729 -0.00076566657683469711154 0.13549999999999998157"
+                rpy="0 0 -1.57" />
+            <parent link="${prefix}_base" />
+            <child link="${prefix}_grasp_tip_camera" />
+        </joint>
 
-<link name="${prefix}_grasp_tip_mirrored"/>
-<joint name="${prefix}_grasp_tip_mirrored_frame" type="fixed">
-<origin xyz="0 0 0" rpy="0 0 3.1416" />
-<parent link="${prefix}_grasp_tip" />
-<child link="${prefix}_grasp_tip_mirrored" />
-</joint>
-
-
-<link name="${prefix}_grasp_point">
-</link>
-<joint name="${prefix}_grasp_point_frame" type="fixed">
-<origin xyz="0.019879794899435476729 -0.00076566657683469602734 0.13049999999999997713" rpy="0 -0 0" />
-<parent link="${prefix}_base" />
-<child link="${prefix}_grasp_point" />
-<axis xyz="0 0 0"/>
-</joint>
-
-<link name="${prefix}_grasp_point_approach">
-</link>
-<joint name="${prefix}_grasp_point_approach_frame" type="fixed">
-<origin xyz="0.015 0 0" rpy="0 0 0" />
-<parent link="${prefix}_grasp_point" />
-<child link="${prefix}_grasp_point_approach" />
-<axis xyz="0 0 0"/>
-</joint>
-
-<link name="${prefix}_finger">
-<visual>
-<origin xyz="-0.058950304651063649419 0.061258215632466875289 -0.027286725877128180373" rpy="-1.570796326794896558 -4.3297802811774688943e-17 0.78539816339744694673" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/motor_finger.stl"/>
-</geometry>
-<material name="motor_finger_material">
-<color rgba="0.49803921568627451677 0.49803921568627451677 0.49803921568627451677 1.0"/>
-</material>
-</visual>
-<collision>
-<origin xyz="-0.058950304651063649419 0.061258215632466875289 -0.027286725877128180373" rpy="-1.570796326794896558 -4.3297802811774688943e-17 0.78539816339744694673" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/motor_finger.stl"/>
-</geometry>
-</collision>
-<visual>
-<origin xyz="-6.9388939039072283776e-18 0.024686725877128168349 -0.027286725877128169965" rpy="-1.570796326794896558 -1.570796326794896558 0" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/finger.stl"/>
-</geometry>
-<material name="finger_material">
-<color rgba="0.91764705882352937127 0.91764705882352937127 0.91764705882352937127 1.0"/>
-</material>
-</visual>
-<collision>
-<origin xyz="-6.9388939039072283776e-18 0.024686725877128168349 -0.027286725877128169965" rpy="-1.570796326794896558 -1.570796326794896558 0" />
-<geometry>
-<mesh filename="package://q_gripper/urdf/finger.stl"/>
-</geometry>
-</collision>
-<inertial>
-<origin xyz="0 0 0" rpy="0 0 0"/>
-<mass value="0" />
-<inertia ixx="0" ixy="0"  ixz="0" iyy="0" iyz="0" izz="0" />
-</inertial>
-</link>
-
-<joint name="${prefix}_FJ" type="revolute">
-<origin xyz="0.020000000000000017764 -0.027286999999999998756 0.050499999999999989342" rpy="-1.5707963267948972241 1.570796327 3.141592653589793116" />
-<parent link="${prefix}_base" />
-<child link="${prefix}_finger" />
-<axis xyz="0 0 1"/>
-<limit effort="1" velocity="20" lower="-0.6" upper="0.79"/>
-<joint_properties friction="0.0"/>
-</joint>
+        <link name="${prefix}_grasp_tip_mirrored" />
+        <joint name="${prefix}_grasp_tip_mirrored_frame" type="fixed">
+            <origin xyz="0 0 0" rpy="0 0 3.1416" />
+            <parent link="${prefix}_grasp_tip" />
+            <child link="${prefix}_grasp_tip_mirrored" />
+        </joint>
 
 
+        <link name="${prefix}_grasp_point" />
+        <joint name="${prefix}_grasp_point_frame" type="fixed">
+            <origin xyz="0.019879794899435476729 -0.00076566657683469602734 0.13049999999999997713"
+                rpy="0 -0 0" />
+            <parent link="${prefix}_base" />
+            <child link="${prefix}_grasp_point" />
+            <axis xyz="0 0 0" />
+        </joint>
+
+        <link name="${prefix}_grasp_point_approach" />
+        <joint name="${prefix}_grasp_point_approach_frame" type="fixed">
+            <origin xyz="0.015 0 0" rpy="0 0 0" />
+            <parent link="${prefix}_grasp_point" />
+            <child link="${prefix}_grasp_point_approach" />
+            <axis xyz="0 0 0" />
+        </joint>
+
+        <link name="${prefix}_finger">
+            <visual>
+                <origin
+                    xyz="-0.058950304651063649419 0.061258215632466875289 -0.027286725877128180373"
+                    rpy="-1.570796326794896558 -4.3297802811774688943e-17 0.78539816339744694673" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/motor_finger.stl" />
+                </geometry>
+                <material name="motor_finger_material">
+                    <color
+                        rgba="0.49803921568627451677 0.49803921568627451677 0.49803921568627451677 1.0" />
+                </material>
+            </visual>
+            <collision>
+                <origin
+                    xyz="-0.058950304651063649419 0.061258215632466875289 -0.027286725877128180373"
+                    rpy="-1.570796326794896558 -4.3297802811774688943e-17 0.78539816339744694673" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/motor_finger.stl" />
+                </geometry>
+            </collision>
+            <visual>
+                <origin
+                    xyz="-6.9388939039072283776e-18 0.024686725877128168349 -0.027286725877128169965"
+                    rpy="-1.570796326794896558 -1.570796326794896558 0" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/finger.stl" />
+                </geometry>
+                <material name="finger_material">
+                    <color
+                        rgba="0.91764705882352937127 0.91764705882352937127 0.91764705882352937127 1.0" />
+                </material>
+            </visual>
+            <collision>
+                <origin
+                    xyz="-6.9388939039072283776e-18 0.024686725877128168349 -0.027286725877128169965"
+                    rpy="-1.570796326794896558 -1.570796326794896558 0" />
+                <geometry>
+                    <mesh filename="package://q_gripper/urdf/finger.stl" />
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="0" />
+                <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_FJ" type="revolute">
+            <origin xyz="0.020000000000000017764 -0.027286999999999998756 0.050499999999999989342"
+                rpy="-1.5707963267948972241 1.570796327 3.141592653589793116" />
+            <parent link="${prefix}_base" />
+            <child link="${prefix}_finger" />
+            <axis xyz="0 0 1" />
+            <limit effort="1" velocity="20" lower="-0.6" upper="0.79" />
+            <joint_properties friction="0.0" />
+        </joint>
 
 
-</xacro:macro>
+        <link name="${prefix}_finger_axis" />
+        <joint name="${prefix}_finger_axis_frame" type="fixed">
+            <origin xyz="0 0 -0.0275" rpy="0 ${pi/2} ${3*pi/4}" />
+            <parent link="${prefix}_finger" />
+            <child link="${prefix}_finger_axis" />
+        </joint>
+
+        <link name="${prefix}_finger_grasp_point" />
+        <joint name="${prefix}_finger_grasp_point_frame" type="fixed">
+            <origin xyz="0 -0.00169 0.08" rpy="0 0 0" />
+            <parent link="${prefix}_finger_axis" />
+            <child link="${prefix}_finger_grasp_point" />
+        </joint>
+
+        <link name="${prefix}_finger_grasp_tip" />
+        <joint name="${prefix}_finger_grasp_tip_frame" type="fixed">
+            <origin xyz="0 0 0.005" rpy="0 0 0" />
+            <parent link="${prefix}_finger_grasp_point" />
+            <child link="${prefix}_finger_grasp_tip" />
+        </joint>
+
+        <link name="${prefix}_finger_grasp_tip_mirrored" />
+        <joint name="${prefix}_finger_grasp_tip_mirrored_frame" type="fixed">
+            <origin xyz="0 0 0" rpy="0 0 3.1416" />
+            <parent link="${prefix}_finger_grasp_tip" />
+            <child link="${prefix}_finger_grasp_tip_mirrored" />
+        </joint>
+
+        <link name="${prefix}_finger_elbow" />
+        <joint name="${prefix}_finger_elbow_frame" type="fixed">
+            <origin xyz="0 -0.0225 0.066" rpy="0 0 0" />
+            <parent link="${prefix}_finger_axis" />
+            <child link="${prefix}_finger_elbow" />
+        </joint>
+
+        <link name="${prefix}_elbow" />
+        <joint name="${prefix}_elbow_frame" type="fixed">
+            <origin xyz="-0.04 0.0 0.055" rpy="0 0 ${pi/2}" />
+            <parent link="${prefix}_palm" />
+            <child link="${prefix}_elbow" />
+        </joint>
+
+    </xacro:macro>
 
 </robot>
