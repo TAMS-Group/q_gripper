@@ -139,6 +139,9 @@ SMSCL sms; // newer/bigger SM servos
 
 #define LED_PIN  (13)
 
+#define ANALOG_PIN_1  (A0)
+#define ANALOG_PIN_2  (A1)
+
 #define SCS_UNKNOWN 0
 #define SCS_SERVO 1
 #define SMS_SERVO 2
@@ -234,8 +237,8 @@ int    servo_timeouts[ N_SERVOS ]       = {      0};
 int    servo_torque_limits[ N_SERVOS ]  = {    512}; // not yet used
 
        // defaults are medium acceleration and fast speed (range 1..4095 each)
-int    servo_accels[ N_SERVOS ]         = {    100};
-int    servo_speeds[ N_SERVOS ]         = {    500};
+int    servo_accels[ N_SERVOS ]         = {    2048};
+int    servo_speeds[ N_SERVOS ]         = {    2048};
 
 int    joint_position_counts[ N_SERVOS ];
 int    joint_velocity_counts[ N_SERVOS ];
@@ -742,6 +745,32 @@ void sendServoCurrents() {
 
   // sprintf( print_buffer,  "I %d %d amps %d \n",
   printStampedIntArray( "I", "amps", (int*) currents );
+}
+
+
+/**
+ * send analog sensor data to the host. This function is called every loop cycle.
+ * The actual sensor is not relevant at this point, but it could be e.g. a potentiometer.
+ * The data is a value between 0 and 1023, depending on the voltage at the analog input pin.
+ */
+void sendAnalogSensorData() {
+  if (verbose > 4) Serial.print( "... sendAnalogSensorData...\n" );
+
+  int t0 = micros();
+
+  int sensor_data[] = { 
+    analogRead( ANALOG_PIN_1 ),
+    analogRead( ANALOG_PIN_2 ), 
+   };
+
+  printStampedIntArray( "A0", "counts", &sensor_data[0] );
+  printStampedIntArray( "A1", "counts", &sensor_data[1] );
+
+  int t1 = micros();
+  if (verbose > 4) {
+    sprintf( print_buffer, "... took %d us.\n", (t1-t0) );
+    Serial.print( print_buffer ); Serial.flush();
+  }
 }
 
 
@@ -1704,6 +1733,8 @@ void loop() {
 
   // every loop cycle, sensor sampling may be auto-throttled
   sendAccelGyro();
+
+  sendAnalogSensorData();
 
   // these functions auto-throttle themselves
   sendServoTemperatures();
