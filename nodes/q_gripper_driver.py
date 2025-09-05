@@ -1,4 +1,5 @@
-#! /usr/bin/env python 
+#! /usr/bin/env python3
+
 #
 # q_gripper_driver.py
 #

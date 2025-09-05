@@ -1,4 +1,5 @@
-#! /usr/bin/env python 
+#! /usr/bin/env python3
+
 # q_gripper_fjtas.py - basic FollowJointTrajectoryActionServer
 # using SCServo position control (and optionally, velocity mode).
 #
