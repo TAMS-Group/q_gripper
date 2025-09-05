@@ -70,7 +70,7 @@ n_joints = 1
 joint_names = []
 joint_index_map = {}
 for i in range( len( short_joint_names )): 
-    full_joint_name = hand_prefix + '/' + short_joint_names[i]
+    full_joint_name = hand_prefix + '_' + short_joint_names[i]
     joint_names.append( full_joint_name )
     joint_index_map[ short_joint_names[i] ] = i
     joint_index_map[ full_joint_name ] = i
@@ -83,7 +83,7 @@ class QGripperFollowJointTrajectoryAction( object ):
 
     # embed()
 
-    def __init__(self, name):
+    def __init__(self):
         print( '... q_gripper follow joint trajectory action controller (fjtas action).init...' )
     
         # print( "###########################################################" )
@@ -126,7 +126,7 @@ class QGripperFollowJointTrajectoryAction( object ):
         print( '... publisher connected to ~joint_goals now...' )
 
         # finally, initalize the action server...
-        self.action_name = name
+        self.action_name = hand_prefix + '/fjtas_action'
         self.action_server = actionlib.SimpleActionServer(
                       self.action_name, 
                       control_msgs.msg.FollowJointTrajectoryAction, 
@@ -368,9 +368,6 @@ class QGripperFollowJointTrajectoryAction( object ):
 
         
 if __name__ == '__main__':
-    fjtas = QGripperFollowJointTrajectoryAction( "/q_gripper_controller/follow_joint_trajectory" )
+    fjtas = QGripperFollowJointTrajectoryAction()
 
-    #  rospy.spin() # IMPOSSIBLE to control-c this crap under python3, simply continues running 
-    while not rospy.is_shutdown():
-        rospy.sleep( rospy.Duration( 0.1 ))
-    exit( 0 )
+    rospy.spin()
