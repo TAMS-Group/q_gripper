@@ -79,24 +79,24 @@
 #include <AsyncDelay.h>
 
 
-
-
 /*
  * serial (bit-banged) interface to HX711 differential strain-gage ADC
  */
 #define have_hx711   1
 #define have_lf_imu  0   
-#define N_LOADCELLS  (1)
+#define N_LOADCELLS  2
 #include "HX711_LITE.h"
 
 HX711_LITE  loadcells[ N_LOADCELLS ];
-long        loadcell_data[ N_LOADCELLS ] = { 0L };
-long        loadcell_last_read_millis[ N_LOADCELLS ]  = { 0L };
-int         loadcell_enabled[ N_LOADCELLS ]    = { 1 };
-int         loadcell_errors[ N_LOADCELLS ]     = { 0 };
-int         loadcell_clk_pins[ N_LOADCELLS ]  = { 2 };
-int         loadcell_data_pins[ N_LOADCELLS ]  = { 3 };
-
+long        loadcell_data[ N_LOADCELLS ] = { 0L, 0L };
+double      loadcell_newtons[ N_LOADCELLS ] = { 0.0, 0.0 };
+long        loadcell_last_read_millis[ N_LOADCELLS ]  = { 0L, 0L };
+int         loadcell_enabled[ N_LOADCELLS ]    = { 1, 1 };
+int         loadcell_errors[ N_LOADCELLS ]     = { 0, 0 };
+int         loadcell_clk_pins[ N_LOADCELLS ]  = { 2, A1 };
+int         loadcell_data_pins[ N_LOADCELLS ]  = { 3, A0 };
+long        loadcell_zeros[ N_LOADCELLS ]  = {-37499, -426999};  // gripperl: { 53056, -200000 }; gripperr: {-37499, -426999}
+double      loadcell_calib_factor[ N_LOADCELLS ] = { 0.000043412, -0.000048781}; // gripperl: { -0.000044217, -0.00004544}; gripperr: { 0.000043412, -0.000048781};
 
 
 
@@ -139,6 +139,8 @@ SMSCL sms; // newer/bigger SM servos
 
 #define LED_PIN  (13)
 
+#define READ_ANALOG false
+
 #define ANALOG_PIN_1  (A0)
 #define ANALOG_PIN_2  (A1)
 
@@ -176,10 +178,12 @@ typedef enum command_mode {
   trajectory_mode = 3,
   effort_mode = 4,
   teach_mode = 5,
+  trigger_torque_mode = 6,
+  torque_mode = 7,
 } command_mode_t;
 
 
-command_mode_t  active_mode = idle_mode;
+command_mode_t  active_mode = trigger_torque_mode;
 
 
 int  demo_enable = 0;
@@ -227,7 +231,7 @@ String servo_names[ N_SERVOS ]          = { "FJ" };
 int    servo_ids[ N_SERVOS ]            = {     37}; // 36 q_gripper_l, 37 q_gripper_r
 int    servo_types[N_SERVOS]            = { SMS_SERVO};
 int    servo_open_positions[ N_SERVOS ] = {   2250};
-int    servo_zero_positions[ N_SERVOS ] = {   1900}; // 1970 q_gripper_l, 1900 q_gripper_r
+int    servo_zero_positions[ N_SERVOS ] = {   1970}; // 1970 q_gripper_l, 1900 q_gripper_r
 int    servo_flex_positions[ N_SERVOS ] = {   1380};
 int    servo_signs[ N_SERVOS ]          = {     -1}; // +1: increase on close
 int    servo_resolution[ N_SERVOS ]     = {   4096}; // counts per 2pi
@@ -247,6 +251,12 @@ int    last_joint_position_update = 0;
 
 int    joint_position_goals[ N_SERVOS ];
 int    joint_position_errors[ N_SERVOS ];
+double force_command = 0.0;
+double force_pid[3] = { 1.0, 0.0, 0.0 }; // PID gains for force control
+double pid_prev_error = 0.0;
+double pid_integral = 0.0;
+double pid_integral_clamp[2] = { -5.0, 5.0 }; // clamp integral term to prevent windup
+double pid_dt = 0.01; // time step for PID calculations
 
 
 
@@ -289,8 +299,13 @@ void usage()
   Serial.println( "F         freeze (at current position)" );
   Serial.println( "G         <int>*1 position goal (counts)" );
   Serial.println( "H         move to home (all zero)" );
+  Serial.println( "I         switch to trigger torque control mode" );
+  Serial.println( "J         switch to torque control mode" );
+  Serial.println( "K         switch to position control mode" );
+  Serial.println( "L         switch to idle mode" );
   Serial.println();
-  Serial.println( "M         set mode: 0=idle 1=pos 2=vel 3=teach" );
+  Serial.println( "M         set mode: " );
+  Serial.println( "N         <int> set command force" );
   Serial.println( "O         <int> open fingers by given degrees" );
   Serial.println( "P         <int> parallel-grasp pos [1500..2500]" );
   
@@ -429,6 +444,33 @@ void printStampedLongArray( char* prefix, char* mnemonic, long* data )
   Serial.flush();                 
 }
 
+void printStampedLongArray2( char* prefix, char* mnemonic, long* data ) 
+{
+  sprintf( print_buffer, "%s %d %d %s %ld %ld \n",
+                 prefix, 
+                 (seq_num++) & 0xff, 
+                 millis() & 0xff, 
+                 mnemonic, 
+                 data[0],
+                 data[1]);
+  Serial.print( print_buffer );
+  Serial.flush();                 
+}
+
+void printStampedDoubleArray2( char* prefix, char* mnemonic, double* data ) 
+{
+  sprintf( print_buffer, "%s %d %d %s %f %f \n",
+                 prefix, 
+                 (seq_num++) & 0xff, 
+                 millis() & 0xff, 
+                 mnemonic, 
+                 data[0],
+                 data[1]);
+  Serial.print( print_buffer );
+  Serial.flush();                 
+}
+
+
 
 
 
@@ -491,13 +533,19 @@ void sendServoPositions() {
 
     if (type == SCS_SERVO) {
       scsWatchdog.start( SCS_TIMEOUT_MICROS, AsyncDelay::MICROS);
-      joint_position_counts[j] = scs.ReadPos( id );
+      int pos = scs.ReadPos( id );
+      if (pos > 10) {
+        joint_position_counts[j] = pos;
+      }
       if (scsWatchdog.isExpired()) handleServoTimeout( j );
 
     }
     else if (type == SMS_SERVO) {
       scsWatchdog.start( SCS_TIMEOUT_MICROS, AsyncDelay::MICROS);
-      joint_position_counts[j] = sms.ReadPos( id );
+      int pos = sms.ReadPos( id );
+      if (pos > 10) {
+        joint_position_counts[j] = pos;
+      }
       if (scsWatchdog.isExpired()) handleServoTimeout( j );
     }
     else {
@@ -583,7 +631,6 @@ void sendServoTorques() {
       sprintf( print_buffer, "... j id type   %d  %d  %d\n", j, id, type );
       Serial.print( print_buffer ); Serial.flush();
     }
-
     if (servo_enabled[j] != 1) {
        // skip disabled servo, keep latest torque readings
        continue;
@@ -647,6 +694,7 @@ void sendServoPositionErrors() {
   {
     // sprintf( print_buffer, "E %d %d pos %d \n",
     printStampedIntArray( "E", "pos", joint_position_errors );
+    printStampedIntArray( "C", "goals", joint_position_goals );
   }
   
   if (verbose > 4) {
@@ -754,6 +802,7 @@ void sendServoCurrents() {
  * The data is a value between 0 and 1023, depending on the voltage at the analog input pin.
  */
 void sendAnalogSensorData() {
+  if (READ_ANALOG == false) return;
   if (verbose > 4) Serial.print( "... sendAnalogSensorData...\n" );
 
   int t0 = micros();
@@ -810,9 +859,16 @@ void sendStrainGageForces() {
         }
         else {
           loadcell_data[i] = raw;
+          loadcell_newtons[i] = (raw - loadcell_zeros[i]) * loadcell_calib_factor[i];
           loadcell_last_read_millis[i] = millis();
         }
       } // is_ready
+      else {
+        if (verbose >3) {
+          sprintf( print_buffer, "... loadcell %d is not ready\n", i);
+          Serial.println( print_buffer ); Serial.flush();
+        }
+      }
     } // for i
 
   }
@@ -825,7 +881,8 @@ void sendStrainGageForces() {
   }
 
   // sprintf( print_buffer, "F %d %d forces %ld %ld \n", 
-  printStampedLongArray( "F", "forces", loadcell_data );
+  printStampedLongArray2( "F", "forces", loadcell_data );
+  printStampedDoubleArray2("N", "newtons", loadcell_newtons);
 }
 
 
@@ -1231,7 +1288,7 @@ void handle_command()
     }
 
 
-    
+    Serial.println(cmd);
     switch( cmd ) {
       case '?': // print help
       case 'h': usage();
@@ -1414,6 +1471,47 @@ void handle_command()
                 removeFirstCommandFromCommandBuffer();
                 break;
 
+      case 'I': // switch to trigger torque control mode
+                active_mode = trigger_torque_mode;
+                break;
+
+      case 'J': // switch to torque control mode
+                active_mode = torque_mode;
+                break;
+
+      case 'K': // switch to position control mode
+                active_mode = position_mode;
+                break;
+
+      case 'L': // switch to idle mode
+                active_mode = idle_mode;
+                break;
+
+      case 'N': // apply a given torque to the selected servo (finger)
+                {
+                  // parse the input command, which is of the form "N <command_torque (float)>"
+                  // note: sscanf's "%f"/"%lf" do NOT work here because the SAMD21 toolchain's
+                  // newlib-nano strips floating-point support out of scanf-family functions
+                  // (unlike printf, which does support floats on this board). strtod() is not
+                  // affected by that limitation, so we parse manually instead of via sscanf.
+                  const char* arg = serialCommandBuffer.c_str() + 1; // skip leading 'N'
+                  char* end = nullptr;
+                  double value = strtod( arg, &end );
+                  if (end != arg) {
+                    force_command = value;
+                    sprintf( print_buffer, "### Set torque goal %f\n", force_command );
+                    Serial.print( print_buffer ); Serial.flush();
+                    active_mode = torque_mode;
+                  }
+                  else {
+                    sprintf( print_buffer, "Unknown command '%s'\n", serialCommandBuffer.c_str() );
+                    Serial.print( print_buffer ); Serial.flush();
+                  }
+                }
+                removeFirstCommandFromCommandBuffer();
+                break;
+
+
       case 'O': // open fingers by given degrees
                 Serial.println( "### O: close fingers..." );
                 n_tokens = sscanf( serialCommandBuffer.c_str(), "O %d", &val );
@@ -1432,6 +1530,7 @@ void handle_command()
                     }
                   }
                   setJointPositionGoal( joint_position_counts );
+                  active_mode = position_mode;
                 }  
                 else {
                   sprintf( print_buffer, "Invalid command ignored: >>%s<<\n", serialCommandBuffer.c_str() );
@@ -1705,7 +1804,47 @@ void setup()
 } // end setup()
 
 
+void handle_trigger_torque_control() {
+  
+  if(active_mode != trigger_torque_mode) {
+    return;
+  }
+  force_command = loadcell_newtons[1];
+}
 
+void handle_torque_control() {
+  if(active_mode != torque_mode) {
+    return;
+  }
+}
+
+void run_pid_loop() {
+  if(active_mode != torque_mode && active_mode != trigger_torque_mode) {
+    return;
+  }
+  
+  if (force_command < 0.1 && joint_position_goals[0] < servo_open_positions[0]) {
+    int joint_command[1];
+    if (joint_position_goals[0] < joint_position_counts[0] - 10) {
+      joint_command[0] = joint_position_counts[0] - 10;
+    } else {
+      joint_command[0] = joint_position_goals[0] + 5;
+    }
+    setJointPositionGoal(joint_command);
+    return;
+  }
+  
+  double force_error = force_command - loadcell_newtons[0];
+  pid_integral += force_error * pid_dt;
+  pid_integral = clamp(pid_integral, pid_integral_clamp[0], pid_integral_clamp[1]);
+  double pid_derivative = (force_error - pid_prev_error) / pid_dt;
+  double pid_output = force_pid[0] * force_error + force_pid[1] * pid_integral + force_pid[2] * pid_derivative;
+  pid_prev_error = force_error;
+  int joint_command[1] = {((int)((double)joint_position_goals[0] - pid_output))};
+
+  setJointPositionGoal(joint_command);
+  
+}
 
 void loop() {
   iteration ++;
@@ -1740,6 +1879,10 @@ void loop() {
   sendServoTemperatures();
   sendServoVoltages();
   sendServoCurrents();
+
+  handle_torque_control();
+  handle_trigger_torque_control();
+  run_pid_loop();
 
 
   // check for incoming user/host commands

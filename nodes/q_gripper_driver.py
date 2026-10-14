@@ -101,7 +101,7 @@ previous_positions = np.zeros( n_joints )
 
 # loadcell stuff
 #
-n_load_cells = 1
+n_load_cells = 2
 grams_to_newtons = 0.00981
 if rospy.has_param( '~load_cell_bias' ):
     load_cell_bias = np.array([rospy.get_param( '~load_cell_bias' )]*n_load_cells)
@@ -666,13 +666,13 @@ def q_gripper_driver():
                 joint_error_publisher.publish( js_errors )
 
             elif (data[0] == 'F'): # load-cell forces
-                (str_F, seq_number, stamp, str_forces, f1) = \
-                  [t(s) for t,s in zip(( str, int, int, str, int), data.split()) ]
+                (str_F, seq_number, stamp, str_forces, f1, f2) = \
+                  [t(s) for t,s in zip(( str, int, int, str, int, int), data.split()) ]
 
                 check_seq_and_stamp( seq_number, stamp )
 
                 # save raw values for use in tara() operation
-                load_cell_counts = [f1]
+                load_cell_counts = [f1, f2]
                 for i in range( n_load_cells ):
                     forces_averaged[i].append( load_cell_counts[i] )
 
@@ -680,9 +680,16 @@ def q_gripper_driver():
                 forces_joy.header.stamp    = rospy.Time.now()
                 forces_joy.axes            = load_cell_counts
                 forces_raw_publisher.publish( forces_joy )
-                forces_calibrated_joy.header.frame_id = 'q_gripper/loadcell_forces'
+
+            elif (data[0] == 'N'): # load-cell forces
+                (str_N, seq_number, stamp, str_forces, f1, f2) = \
+                  [t(s) for t,s in zip(( str, int, int, str, float, float), data.split()) ]
+
+                check_seq_and_stamp( seq_number, stamp )
+            
+                forces_calibrated_joy.header.frame_id = 'q_gripper/loadcell_newton_forces'
                 forces_calibrated_joy.header.stamp    = rospy.Time.now()
-                forces_calibrated_joy.axes            = get_calibrated_forces( load_cell_counts )
+                forces_calibrated_joy.axes            = [f1, f2]
                 forces_publisher.publish( forces_calibrated_joy )
 
             elif (data[0] == 'G'): # IMU: 'b'G 88 173 0 accel -5 -37 8235 gyro 13 -47 -59 \n''
